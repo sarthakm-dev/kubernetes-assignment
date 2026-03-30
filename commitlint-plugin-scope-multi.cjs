@@ -1,0 +1,26 @@
+module.exports = {
+  rules: {
+    'scope-multi-enum': (parsed, _when) => {
+      if (!parsed.scope) {
+        return [true];
+      }
+
+      const validScopes = ['cli', 'docs', 'release', 'component','api','core','db','ui','server','test'];
+      const delimiters = [',', '/'];
+      const scopes = parsed.scope
+        .split(new RegExp(`[${delimiters.map(d => d === '/' ? '\\/' : d).join('')}]`))
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      const invalidScopes = scopes.filter(s => !validScopes.includes(s));
+      if (invalidScopes.length > 0) {
+        return [
+          false,
+          `scope must be one of: ${validScopes.join(', ')}. Found invalid scope(s): ${invalidScopes.join(', ')}`,
+        ];
+      }
+
+      return [true];
+    },
+  },
+};
