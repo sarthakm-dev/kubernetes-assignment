@@ -1,25 +1,37 @@
-module.exports = {
-  root: true,
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'module',
+const tsParser = require('@typescript-eslint/parser');
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
+const prettierPlugin = require('eslint-plugin-prettier');
+
+module.exports = [
+  {
+    ignores: ['**/node_modules/**', '**/dist/**'],
   },
-  env: {
-    node: true,
-    es6: true,
-    jest: true,
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+      },
+      globals: {
+        console: 'readonly',
+        module: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        setImmediate: 'readonly',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      prettier: prettierPlugin,
+    },
+    rules: {
+      'no-console': 'off',
+      'prettier/prettier': 'error',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
-  plugins: ['@typescript-eslint', 'prettier'],
-  rules: {
-    'prettier/prettier': 'error',
-    '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    'no-console': 'off',
-  },
-};
+];
