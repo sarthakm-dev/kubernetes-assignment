@@ -7,13 +7,13 @@ const redis = new Redis({
 });
 
 export async function enqueueJob(job: Job): Promise<void> {
-  await redis.lpush('job_queue', JSON.stringify(job));
   await redis.hset(`job:${job.id}`, {
     status: 'queued',
     task: job.task,
     value: String(job.value),
     createdAt: String(job.createdAt),
   });
+  await redis.lpush('job_queue', JSON.stringify(job));
   await redis.incr('total_jobs_submitted');
 }
 

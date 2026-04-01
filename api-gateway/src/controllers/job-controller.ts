@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import client from 'prom-client';
 import { enqueueJob, getJobStatus, isJobExist } from '../services/job-service';
 import { JobPayload } from '../types/job.types';
@@ -11,7 +11,7 @@ const totalJobsSubmitted = new client.Counter({
 
 export async function submit(req: Request, res: Response): Promise<void> {
   try {
-    const id = uuidv4();
+    const id = randomUUID();
     const { task = 'fibonacci', value = 35 } = req.body as JobPayload;
 
     await enqueueJob({ id, task, value, createdAt: Date.now() });
