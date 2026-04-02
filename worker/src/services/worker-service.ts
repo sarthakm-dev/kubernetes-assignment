@@ -6,6 +6,11 @@ const redis = new Redis({
   port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379,
 });
 
+const queueRedis = new Redis({
+  host: process.env.REDIS_HOST || 'redis',
+  port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379,
+});
+
 export async function setJobProcessing(id: string, startedAt: number): Promise<void> {
   await redis.hset(`job:${id}`, 'status', 'processing', 'startedAt', String(startedAt));
 }
@@ -37,5 +42,5 @@ export async function getQueueLength(): Promise<number> {
 }
 
 export async function popJob(timeoutSecs = 5): Promise<[string, string] | null> {
-  return await redis.brpop('job_queue', timeoutSecs);
+  return await queueRedis.brpop('job_queue', timeoutSecs);
 }
