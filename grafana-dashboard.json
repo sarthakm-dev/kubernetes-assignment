@@ -1,0 +1,79 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "#000000",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": null,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Jobs Processed Total",
+      "type": "graph",
+      "targets": [
+        { "expr": "jobs_processed_total", "legendFormat": "jobs_processed", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": null,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "title": "Job Processing Time (Histogram)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(job_processing_time_seconds_sum[5m]) / rate(job_processing_time_seconds_count[5m])",
+          "legendFormat": "avg_time_s",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": null,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 3,
+      "title": "Queue Length",
+      "type": "graph",
+      "targets": [{ "expr": "queue_length", "legendFormat": "queue", "refId": "A" }]
+    },
+    {
+      "datasource": null,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 4,
+      "title": "Worker CPU Usage (%)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "sum by (pod) ((rate(process_cpu_user_seconds_total{job=\"job-worker\"}[1m]) + rate(process_cpu_system_seconds_total{job=\"job-worker\"}[1m])) * 100)",
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 30,
+  "style": "dark",
+  "tags": ["kubernetes", "jobs"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Job Worker Monitoring",
+  "uid": "job-worker-monitoring",
+  "version": 1
+}
