@@ -11,5 +11,6 @@
     "forceConsistentCasingInFileNames": true,
     "ignoreDeprecations": "6.0"
   },
-  "include": ["api-gateway/**/*.ts", "worker/**/*.ts", "stats-aggregator/**/*.ts"]
+  "include": ["api-gateway/**/*.ts", "worker/**/*.ts", "stats-aggregator/**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

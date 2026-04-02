@@ -1,6 +1,9 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import router from './routes';
 import { pollJobs } from './services/worker-loop';
+
+dotenv.config();
 
 const app = express();
 app.use(router);
