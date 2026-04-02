@@ -28,7 +28,6 @@ export async function pollJobs(): Promise<void> {
   try {
     const item = await popJob();
     if (!item) {
-      setImmediate(pollJobs);
       return;
     }
 
