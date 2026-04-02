@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import client from 'prom-client';
 import { getQueueLength, getTotalJobsCompleted } from '../services/worker-service';
 
+client.collectDefaultMetrics({ register: client.register });
+
 const jobsProcessed = new client.Counter({
   name: 'jobs_processed_total',
   help: 'Total number of jobs processed',
