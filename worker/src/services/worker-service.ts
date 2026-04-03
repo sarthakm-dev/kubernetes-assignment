@@ -12,7 +12,12 @@ const queueRedis = new Redis({
 });
 
 export async function setJobProcessing(id: string, startedAt: number): Promise<void> {
-  await redis.hset(`job:${id}`, 'status', 'processing', 'startedAt', String(startedAt));
+  try {
+    await redis.hset(`job:${id}`, 'status', 'processing', 'startedAt', String(startedAt));
+  } catch (err) {
+    console.error(`failed to mark job ${id} as processing`, err);
+    throw new Error('failed to update job processing state');
+  }
 }
 
 export async function setJobCompleted(
@@ -20,27 +25,52 @@ export async function setJobCompleted(
   result: string | number,
   durationSeconds: number
 ): Promise<void> {
-  await redis.incr('total_jobs_completed');
-  await redis.hset(`job:${job.id}`, {
-    status: 'completed',
-    result: String(result),
-    completedAt: String(Date.now()),
-    durationSeconds: String(durationSeconds),
-  });
+  try {
+    await redis.incr('total_jobs_completed');
+    await redis.hset(`job:${job.id}`, {
+      status: 'completed',
+      result: String(result),
+      completedAt: String(Date.now()),
+      durationSeconds: String(durationSeconds),
+    });
+  } catch (err) {
+    console.error(`failed to mark job ${job.id} as completed`, err);
+    throw new Error('failed to update completed job state');
+  }
 }
 
 export async function setJobError(job: Job, errorMessage: string): Promise<void> {
-  await redis.hset(`job:${job.id}`, 'status', 'error', 'errorMessage', errorMessage);
+  try {
+    await redis.hset(`job:${job.id}`, 'status', 'error', 'errorMessage', errorMessage);
+  } catch (err) {
+    console.error(`failed to mark job ${job.id} as errored`, err);
+    throw new Error('failed to update errored job state');
+  }
 }
 
 export async function getTotalJobsCompleted(): Promise<number> {
-  return Number((await redis.get('total_jobs_completed')) || 0);
+  try {
+    return Number((await redis.get('total_jobs_completed')) || 0);
+  } catch (err) {
+    console.error('failed to fetch total jobs completed', err);
+    throw new Error('failed to fetch completed jobs total');
+  }
 }
 
 export async function getQueueLength(): Promise<number> {
-  return await redis.llen('job_queue');
+  try {
+    return await redis.llen('job_queue');
+  } catch (err) {
+    console.error('failed to fetch worker queue length', err);
+    throw new Error('failed to fetch worker queue length');
+  }
 }
 
 export async function popJob(timeoutSecs = 5): Promise<[string, string] | null> {
-  return await queueRedis.brpop('job_queue', timeoutSecs);
+  try {
+    return await queueRedis.brpop('job_queue', timeoutSecs);
+  } catch (err) {
+    console.error('failed to pop job from queue', err);
+    throw new Error('failed to pop job from queue');
+  }
 }

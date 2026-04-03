@@ -8,5 +8,9 @@ app.use(router);
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 app.listen(PORT, () => {
   console.log(`Job worker/metrics up on port ${PORT}`);
-  pollJobs();
+
+  void pollJobs().catch((err) => {
+    console.error('worker poll loop exited unexpectedly', err);
+    process.exit(1);
+  });
 });

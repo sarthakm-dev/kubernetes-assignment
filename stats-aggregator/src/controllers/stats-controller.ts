@@ -7,20 +7,11 @@ import {
   getAverageJobTimeSeconds,
 } from '../services/stats-service';
 
-const totalJobsSubmittedGauge = new client.Gauge({
-  name: 'total_jobs_submitted',
-  help: 'Total jobs submitted',
-});
-
-const totalJobsCompletedGauge = new client.Gauge({
-  name: 'total_jobs_completed',
-  help: 'Total jobs completed',
-});
-
-const queueLengthGauge = new client.Gauge({
-  name: 'queue_length',
-  help: 'Current Redis queue length',
-});
+import {
+  queueLengthGauge,
+  totalJobsCompletedGauge,
+  totalJobsSubmittedGauge,
+} from '../config/prom-config';
 
 export async function stats(_req: Request, res: Response): Promise<void> {
   try {
@@ -42,14 +33,19 @@ export async function stats(_req: Request, res: Response): Promise<void> {
 }
 
 export async function metrics(_req: Request, res: Response): Promise<void> {
-  const submitted = await getSubmitted();
-  const completed = await getCompleted();
-  const qlen = await getQueueLength();
+  try {
+    const submitted = await getSubmitted();
+    const completed = await getCompleted();
+    const qlen = await getQueueLength();
 
-  totalJobsSubmittedGauge.set(submitted);
-  totalJobsCompletedGauge.set(completed);
-  queueLengthGauge.set(qlen);
+    totalJobsSubmittedGauge.set(submitted);
+    totalJobsCompletedGauge.set(completed);
+    queueLengthGauge.set(qlen);
 
-  res.set('Content-Type', client.register.contentType);
-  res.send(await client.register.metrics());
+    res.set('Content-Type', client.register.contentType);
+    res.send(await client.register.metrics());
+  } catch (err) {
+    console.error('metrics error', err);
+    res.status(500).json({ error: 'could not get metrics' });
+  }
 }

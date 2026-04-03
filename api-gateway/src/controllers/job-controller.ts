@@ -3,11 +3,7 @@ import { randomUUID } from 'crypto';
 import client from 'prom-client';
 import { enqueueJob, getJobStatus, isJobExist } from '../services/job-service';
 import { JobPayload } from '../types/job.types';
-
-const totalJobsSubmitted = new client.Counter({
-  name: 'job_submitter_total_jobs_submitted',
-  help: 'Total jobs submitted through job submitter',
-});
+import { totalJobsSubmitted } from '../config/prom-config';
 
 export async function submit(req: Request, res: Response): Promise<void> {
   try {
@@ -41,6 +37,11 @@ export async function status(req: Request, res: Response): Promise<void> {
 }
 
 export async function metrics(_req: Request, res: Response): Promise<void> {
-  res.set('Content-Type', client.register.contentType);
-  res.send(await client.register.metrics());
+  try {
+    res.set('Content-Type', client.register.contentType);
+    res.send(await client.register.metrics());
+  } catch (err) {
+    console.error('metrics error', err);
+    res.status(500).json({ error: 'failed to fetch metrics' });
+  }
 }
