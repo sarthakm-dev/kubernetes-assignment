@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: job-submitter-ingress
+  namespace: job-monitoring
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /submit
+            pathType: Prefix
+            backend:
+              service:
+                name: job-submitter
+                port:
+                  number: 80
+          - path: /status
+            pathType: Prefix
+            backend:
+              service:
+                name: job-submitter
+                port:
+                  number: 80
