@@ -5,7 +5,7 @@
 - `api-gateway/` - job submitter service
 - `worker/` - worker service with HPA
 - `stats-aggregator/` - stats and metrics service
-- `k8s/k8s-manifests.yaml` - main Kubernetes manifest
+- `k8s/` - Kubernetes manifests
 - `grafana-dashboard.json` - dashboard JSON copy for reference
 
 ## Overview
@@ -92,7 +92,7 @@ kubectl top pods -n kube-system
 ### 5. Deploy the application
 
 ```bash
-kubectl apply -f k8s/k8s-manifests.yaml
+kubectl apply -f k8s/
 ```
 
 ### 6. Verify everything
@@ -171,42 +171,14 @@ kubectl get hpa -n job-monitoring -w
 kubectl get pods -n job-monitoring -l app=job-worker -w
 ```
 
-Important:
-
-- `job-submitter` only accepts `POST /submit`
-- a plain `ab ... /submit` sends `GET` requests and will not queue worker jobs
-- use a heavier payload like `{"task":"fibonacci","value":40}` or higher if CPU still does not cross the `70%` HPA target
-- watch Grafana during the stress test to see the `Worker CPU Usage (%)` panel move in near real time
-
 ## Clean Restart
 
 If you want to delete everything and start again:
 
 ```bash
 kubectl delete namespace job-monitoring
-kubectl apply -f k8s/k8s-manifests.yaml
+kubectl apply -f k8s/
 ```
-
-If the cluster itself was recreated, run the full flow again:
-
-1. Build images
-2. Enable Minikube addons
-3. Apply `k8s/k8s-manifests.yaml`
-4. Port-forward Prometheus, Grafana, and the API if needed
-
-## Troubleshooting
-
-If resources appear in Docker Desktop Kubernetes instead of Minikube:
-
-- run `kubectl config current-context`
-- switch back with `kubectl config use-context minikube`
-- confirm with `kubectl config current-context` again before `kubectl apply`
-
-If HPA does not scale:
-
-- make sure `kubectl top pods -n job-monitoring` returns CPU values
-- make sure `kubectl get hpa -n job-monitoring` does not show `<unknown>`
-- make sure the stress test is heavy enough to push worker CPU above `70%`
 
 Useful commands:
 
