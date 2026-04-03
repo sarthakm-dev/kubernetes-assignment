@@ -1,15 +1,5 @@
-import Redis from 'ioredis';
 import { Job } from '../types/job.types';
-
-const redis = new Redis({
-  host: process.env.REDIS_HOST || 'redis',
-  port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379,
-});
-
-const queueRedis = new Redis({
-  host: process.env.REDIS_HOST || 'redis',
-  port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379,
-});
+import { queueRedis, redis } from '../config/redis';
 
 export async function setJobProcessing(id: string, startedAt: number): Promise<void> {
   try {
