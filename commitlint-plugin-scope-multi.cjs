@@ -5,14 +5,25 @@ module.exports = {
         return [true];
       }
 
-      const validScopes = ['cli', 'docs', 'release', 'component','api','core','db','ui','server','test'];
+      const validScopes = [
+        'cli',
+        'docs',
+        'release',
+        'component',
+        'api',
+        'core',
+        'db',
+        'ui',
+        'server',
+        'test',
+      ];
       const delimiters = [',', '/'];
       const scopes = parsed.scope
-        .split(new RegExp(`[${delimiters.map(d => d === '/' ? '\\/' : d).join('')}]`))
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
+        .split(new RegExp(`[${delimiters.map((d) => (d === '/' ? '\\/' : d)).join('')}]`))
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
 
-      const invalidScopes = scopes.filter(s => !validScopes.includes(s));
+      const invalidScopes = scopes.filter((s) => !validScopes.includes(s));
       if (invalidScopes.length > 0) {
         return [
           false,
