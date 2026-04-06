@@ -66,6 +66,18 @@ kubectl config current-context
 pnpm install
 ```
 
+Copy the local env file:
+
+```bash
+Copy-Item .env.example .env
+```
+
+For Kubernetes, make a private secret file and edit the values there:
+
+```bash
+Copy-Item k8s/secret.example.yaml k8s/secret.yaml
+```
+
 ### 3. Build images
 
 ```bash
@@ -91,9 +103,14 @@ kubectl top pods -n kube-system
 
 ### 5. Deploy the application
 
+Apply the namespace first, then apply the manifests:
+
 ```bash
+kubectl apply -f k8s/namespace/
 kubectl apply -f k8s/
 ```
+
+`k8s/secret.yaml` is ignored by git, so the real password stays local.
 
 ### 6. Verify everything
 
@@ -123,7 +140,7 @@ kubectl port-forward svc/grafana -n job-monitoring 3000:80
 Open `http://localhost:3000`
 
 - username: `admin`
-- password: `admin`
+- password: the value of `GRAFANA_ADMIN_PASSWORD` in `k8s/secret.yaml`
 
 The dashboard is provisioned automatically.
 It includes a real-time worker CPU usage panel based on Prometheus process metrics scraped from each worker pod.
@@ -177,6 +194,7 @@ If you want to delete everything and start again:
 
 ```bash
 kubectl delete namespace job-monitoring
+kubectl apply -f k8s/namespace/
 kubectl apply -f k8s/
 ```
 
