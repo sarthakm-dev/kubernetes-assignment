@@ -17,13 +17,9 @@ spec:
         - name: job-worker
           image: job-worker:latest
           imagePullPolicy: IfNotPresent
-          env:
-            - name: REDIS_HOST
-              value: redis
-            - name: REDIS_PORT
-              value: "6379"
-            - name: PORT
-              value: "3000"
+          envFrom:
+            - secretRef:
+                name: job-monitoring-env
           resources:
             requests:
               cpu: "250m"

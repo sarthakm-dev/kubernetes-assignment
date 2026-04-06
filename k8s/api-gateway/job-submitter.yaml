@@ -17,13 +17,9 @@ spec:
         - name: job-submitter
           image: job-submitter:latest
           imagePullPolicy: IfNotPresent
-          env:
-            - name: REDIS_HOST
-              value: redis
-            - name: REDIS_PORT
-              value: "6379"
-            - name: PORT
-              value: "3000"
+          envFrom:
+            - secretRef:
+                name: job-monitoring-env
           ports:
             - containerPort: 3000
 ---
