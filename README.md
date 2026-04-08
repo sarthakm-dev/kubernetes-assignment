@@ -169,7 +169,8 @@ Notes:
 
 ## Stress Test
 
-Use ApacheBench with a JSON request body so the submitter actually enqueues jobs.
+- Download the Apache binaries from official website of Apache Bench.
+- Extract the ZIP file and locate ab.exe in the bin folder.
 
 ```bash
 Set-Content -LiteralPath stress-body.json -Value '{"task":"fibonacci","value":40}'
